@@ -43,10 +43,10 @@ def run():
     get_label_name = metadata.features['label'].int2str
 
     for image, label in raw_train.take(2):
-        print("lol")
         plt.figure()
         plt.imshow(image)
         plt.title(get_label_name(label))
+        plt.show()
 
     train = raw_train.map(format_example)
     validation = raw_validation.map(format_example)
@@ -65,7 +65,17 @@ def run():
     IMG_SHAPE = (IMG_SIZE, IMG_SIZE, 3)
 
     # Create the base model from the pre-trained model MobileNet V2
-    # base_model = tf.keras.applications.inception_v3(input_shape=IMG_SHAPE, include_top=False, weights='imagenet')
+    base_model = tf.keras.applications.MobileNetV2(input_shape=IMG_SHAPE, include_top=False, weights='imagenet')
+
+    feature_batch = base_model(image_batch)
+    print(feature_batch.shape)
+
+    base_model.trainable = False
+    base_model.summary()
+
+    global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
+    feature_batch_average = global_average_layer(feature_batch)
+    print(feature_batch_average.shape)
 
 
 if __name__ == '__main__':
