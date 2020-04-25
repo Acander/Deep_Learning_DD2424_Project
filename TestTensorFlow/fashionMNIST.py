@@ -1,10 +1,14 @@
 # TensorFlow and tf.keras
+import os
+
 import tensorflow as tf
 from tensorflow import keras
 
 # Helper libraries
 import numpy as np
 import matplotlib.pyplot as plt
+
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
@@ -49,6 +53,7 @@ if __name__ == '__main__':
 
     (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
+    '''
     #Explore the model
     print(train_images.shape)
     print(len(train_labels))
@@ -62,11 +67,13 @@ if __name__ == '__main__':
     plt.colorbar()
     plt.grid(False)
     plt.show()
+    '''
 
     #Preprocess the data
     train_images = train_images/255.0
     test_images = test_images/255
 
+    '''
     #Verify data correctness
     plt.figure(figsize=(10, 10))
     for i in range(25):
@@ -77,27 +84,49 @@ if __name__ == '__main__':
         plt.imshow(train_images[i], cmap=plt.cm.binary)
         plt.xlabel(class_names[train_labels[i]])
     plt.show()
+    '''
 
+    train_images = np.expand_dims(train_images, axis=3)
+    test_images = np.expand_dims(test_images, axis=3)
+
+    model = keras.Sequential([
+        keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+        keras.layers.Conv2D(32, (3, 3), activation='relu'),
+        keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        keras.layers.Flatten(),
+        keras.layers.Dense(256, activation='relu'),
+        keras.layers.Dense(10)
+    ])
+
+    '''
     #Build network
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(28, 28)),
+        keras.layers.Dense(512, activation='relu'),
+        keras.layers.Dense(256, activation='relu'),
         keras.layers.Dense(128, activation='relu'),
         keras.layers.Dense(10)
     ])
+    '''
 
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
 
     #Train network
-    model.fit(train_images, train_labels, epochs=10)
+    model.fit(train_images, train_labels, epochs=50)
 
     #Evaluate accuracy
     test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
     print('\nTest accuracy:', test_acc)
 
     predictions = model.predict(test_images)
-    print(class_names[np.argmax(predictions[0])])
+    # print(class_names[np.argmax(predictions[0])])
 
     '''i = 0
     plt.figure(figsize=(6, 3))
@@ -115,6 +144,7 @@ if __name__ == '__main__':
     plot_value_array(i, predictions[i], test_labels)
     plt.show()'''
 
+    '''
     num_rows = 5
     num_cols = 3
     num_images = num_rows * num_cols
@@ -126,3 +156,4 @@ if __name__ == '__main__':
         plot_value_array(i, predictions[i], test_labels)
     plt.tight_layout()
     plt.show()
+    '''
