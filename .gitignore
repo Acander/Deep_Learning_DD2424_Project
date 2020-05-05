@@ -76,3 +76,5 @@ fabric.properties
 .idea/modules.xml
 
 .idea/vcs.xml
+
+ImageCaptioning/captions.zip
