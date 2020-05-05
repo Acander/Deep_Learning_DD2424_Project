@@ -78,3 +78,5 @@ fabric.properties
 .idea/vcs.xml
 
 ImageCaptioning/captions.zip
+ImageCaptioning/annotations
+ImageCaptioning/train2014
